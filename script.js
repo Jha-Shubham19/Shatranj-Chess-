@@ -58,7 +58,7 @@ class Piece {
     checkForCheck(color = this.color) {
         let isCheck = false;
         
-        console.log("its here",color);
+        // console.log("its here",color);
         for(let val of Piece.piecesOnBoard)
             for(let valNode of val)
                 if(valNode!==undefined && valNode.color.localeCompare(color)!==0 && valNode.name.localeCompare("king")!==0)
@@ -73,7 +73,7 @@ class Piece {
                 break;
             }
         };
-        console.log("len",Piece.attackingSquares.length);
+        // console.log("len",Piece.attackingSquares.length);
         Board.removeCircle();
         return isCheck;
     }
