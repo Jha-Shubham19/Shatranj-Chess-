@@ -438,6 +438,8 @@ class Board {
                     }
                 }
                 newNode.appendChild(saveImg);
+                if(Piece.enPassentPawnParent!==null) Piece.enPassentPawnParent = null;
+                
                 // console.log("shit",saveImg);
                 //enpassent
                 if(saveNode.name == 'pawn') {
