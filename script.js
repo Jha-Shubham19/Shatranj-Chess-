@@ -434,9 +434,11 @@ class Board {
                         Piece.piecesOnBoard[this.activeSquare[0]+inc][this.activeSquare[1]] = undefined;
                         let removePawn = this.actualBoard[this.activeSquare[0]+inc][this.activeSquare[1]];
                         removePawn.removeChild(removePawn.firstChild);
+                        Piece.enPassentPawnParent = null;
                     }
                 }
                 newNode.appendChild(saveImg);
+                // console.log("shit",saveImg);
                 //enpassent
                 if(saveNode.name == 'pawn') {
                     let pawn = saveNode;
