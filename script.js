@@ -86,7 +86,7 @@ class Pawn extends Piece{
         this.isEnPassentPawn = false;
     }
     setAttackingSquares(forCheck = false) {
-        if(Piece.enPassentPawnParent!=null) Piece.enPassentPawnParent.enPassent();
+        if(Piece.enPassentPawnParent!=null && !forCheck) Piece.enPassentPawnParent.enPassent();
         let x = this.pos[0] , y = this.pos[1];
         let node = [Board.actualBoard[x][y],Piece.piecesOnBoard[x][y]];
 
@@ -145,8 +145,8 @@ class Pawn extends Piece{
             x = this.pos[0]-1;
             y = this.pos[1];
         }
-        if(Piece.piecesOnBoard[x][y] !== undefined) return;
-        let newPawn = new Pawn('pawn' , `${this.color}` , `statics\\images\\trans.png` , [x,y]);
+        if(Piece.piecesOnBoard[x][y] !== undefined) return;//statics\\images\\trans.png
+        let newPawn = new Pawn('pawn' , `${this.color}` , `${this.imgSrc}` , [x,y]);
         newPawn.isEnPassentPawn = true;
         let img = document.createElement('img');
         img.src = newPawn.imgSrc;
