@@ -328,7 +328,7 @@ class King extends Piece{
             let rightRook = Piece.piecesOnBoard[x][7];
 
             if(leftRook!==undefined && leftRook.name.localeCompare('rook')==0 && leftRook.hasMoved==false) {
-                if(Piece.piecesOnBoard[x][y-1]==undefined && Piece.piecesOnBoard[x][y-2]==undefined) {
+                if(Piece.piecesOnBoard[x][y-1]==undefined && Piece.piecesOnBoard[x][y-2]==undefined && Piece.piecesOnBoard[x][y-3]==undefined) {
                     Piece.piecesOnBoard[x][y-1] = this;
                     Piece.piecesOnBoard[x][y-2] = this;
                     let temp = Piece.attackingSquares.slice();
@@ -342,7 +342,7 @@ class King extends Piece{
                 }
             }
             if(rightRook!==undefined && rightRook.name.localeCompare('rook')==0 && rightRook.hasMoved==false) {
-                if(Piece.piecesOnBoard[x][y+1]==undefined && Piece.piecesOnBoard[x][y+2]==undefined && Piece.piecesOnBoard[x][y+3]) {
+                if(Piece.piecesOnBoard[x][y+1]==undefined && Piece.piecesOnBoard[x][y+2]==undefined) {
                     Piece.piecesOnBoard[x][y+1] = this;
                     Piece.piecesOnBoard[x][y+2] = this;
                     let temp = Piece.attackingSquares.slice();
@@ -392,8 +392,12 @@ class Board {
             }
             if(getOut) break;
         }
-    
-        if(!getOut) setTimeout(() => alert(`${msg}`), 200);
+        
+        if(!getOut) {
+            if(msg.endsWith('Won')) Game.aud.defeat.play();
+            else if(msg.endsWith('Draw')) Game.aud.draw.play();
+            setTimeout(() => alert(`${msg}`), 200);
+        }
 
         Piece.checkForCheckMate = false;
 
@@ -423,23 +427,24 @@ class Board {
                 let saveNode = Piece.piecesOnBoard[this.activeSquare[0]][this.activeSquare[1]];
                 let colorCurrent = saveNode.color;
 
-                
+                let wasCapture = false;
                 if(newNode.firstChild != null) {
                     newNode.removeChild(newNode.firstChild);
                     Piece.attackingSquares.splice(Piece.attackingSquares.indexOf(i),1);
                     newNode.classList.remove('circle-border');
                     if(prevsaveNode.name == 'pawn' && prevsaveNode.isEnPassentPawn==true) {
-                        console.log("killed");
+                        // console.log("killed");
                         let inc = colorCurrent.localeCompare('white')==0 ? 1 : -1;
                         Piece.piecesOnBoard[this.activeSquare[0]+inc][this.activeSquare[1]] = undefined;
                         let removePawn = this.actualBoard[this.activeSquare[0]+inc][this.activeSquare[1]];
                         removePawn.removeChild(removePawn.firstChild);
                         Piece.enPassentPawnParent = null;
                     }
+                    wasCapture = true;
                 }
                 newNode.appendChild(saveImg);
                 if(Piece.enPassentPawnParent!==null) Piece.enPassentPawnParent = null;
-                
+
                 // console.log("shit",saveImg);
                 //enpassent
                 if(saveNode.name == 'pawn') {
@@ -464,6 +469,7 @@ class Board {
                 }
 
                 //castling
+                let wasCastle = false
                 if(saveNode.name.localeCompare('king')==0) {
                     if(this.prevActiveSquare[1]-this.activeSquare[1]==2) {
                         Piece.piecesOnBoard[this.activeSquare[0]][this.activeSquare[1]+1] = Piece.piecesOnBoard[this.activeSquare[0]][0];
@@ -472,6 +478,7 @@ class Board {
                         Board.actualBoard[this.activeSquare[0]][this.activeSquare[1]+1].appendChild(node.firstElementChild);
 
                         Piece.piecesOnBoard[this.activeSquare[0]][0] = undefined;
+                        wasCastle = true;
                     }
                     if(this.activeSquare[1]-this.prevActiveSquare[1]==2) {
                         Piece.piecesOnBoard[this.activeSquare[0]][this.activeSquare[1]-1] = Piece.piecesOnBoard[this.activeSquare[0]][7];
@@ -480,6 +487,7 @@ class Board {
                         Board.actualBoard[this.activeSquare[0]][this.activeSquare[1]-1].appendChild(node.firstElementChild);
                         
                         Piece.piecesOnBoard[this.activeSquare[0]][7] = undefined;
+                        wasCastle = true;
                     }
                 }
                 wasMoved = true;
@@ -505,13 +513,20 @@ class Board {
                         }
                     })
                 });
+                let wasChecked = false;
                 if(saveNode.checkForCheck(colorSmallArr[this.whosTurn])) {
-                    // console.log("bothumatodkfdkfj");
+                    wasChecked = true;
+
                     let winner = colorSmallArr[this.whosTurn^1];
                     this.satelement(`Game Over : ${winner.charAt(0).toUpperCase()+winner.slice(1)} Won`,colorSmallArr[this.whosTurn]);
                 }
                 else 
                     this.satelement(`Satelement : Draw`,colorSmallArr[this.whosTurn]);
+                
+                if(wasChecked) Game.aud.check.play();
+                else if(wasCapture) Game.aud.capture.play();
+                else if(wasCastle) Game.aud.castles.play();
+                else Game.aud.move.play();
                 
                 break;
             }
@@ -539,7 +554,14 @@ class Board {
     
 };
 class Game {
-    
+    static aud = {
+        check: new Audio("statics\\audio\\check.mp3"),
+        castles: new Audio("statics\\audio\\castles.mp3"),
+        capture: new Audio("statics\\audio\\capture.mp3"),
+        move: new Audio("statics\\audio\\move.mp3"),
+        defeat: new Audio("statics\\audio\\defeat.mp3"),
+        draw: new Audio("statics\\audio\\draw.mp3")
+    };
     buildPieces() {
         //making pawns
         for(let i = 0 ; i<8 ; i++) {
