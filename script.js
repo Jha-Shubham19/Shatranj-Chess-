@@ -408,7 +408,7 @@ class Board {
         this.activeSquare = [i,j];
         if(!Piece.attackingSquares.length) return;
         let colorSmallArr = ['white','black'];
-        
+        console.log(Piece.attackingSquares);
         let wasMoved = false;
         for(let i of Piece.attackingSquares) {
             if(i[0] == this.activeSquare[0] && i[1] == this.activeSquare[1]) {
@@ -528,6 +528,7 @@ class Board {
                 else if(wasCastle) Game.aud.castles.play();
                 else Game.aud.move.play();
                 
+                Board.removeCircle();
                 break;
             }
         }

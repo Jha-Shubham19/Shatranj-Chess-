@@ -3,7 +3,9 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+body {
+    background-color: rgb(53 54 58);
+}
 .board {
     display: grid;
     position: absolute;
