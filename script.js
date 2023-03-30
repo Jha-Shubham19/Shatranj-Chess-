@@ -61,7 +61,7 @@ class Piece {
         // console.log("its here",color);
         for(let val of Piece.piecesOnBoard)
             for(let valNode of val)
-                if(valNode!==undefined && valNode.color.localeCompare(color)!==0 && valNode.name.localeCompare("king")!==0)
+                if(valNode!==undefined && valNode.color.localeCompare(color)!==0)
                     valNode.setAttackingSquares(true);
         
         for(let i of Piece.attackingSquares) {
