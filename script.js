@@ -13,7 +13,7 @@ class Piece {
         Piece.piecesOnBoard[pos[0]][pos[1]] = this;
     }
     showAttackingSquares() {
-        
+
         if(Piece.enPassentPawnParent!==null && this.name.localeCompare('pawn')!==0) {
             Piece.enPassentPawnParent.removeEnpassent();
         }
@@ -37,9 +37,8 @@ class Piece {
         }
         attackingSquaresCopy =  attackingSquaresCopy.filter(val=> val!==null);
         Piece.piecesOnBoard[this.pos[0]][this.pos[1]] = this;
-        // console.log(attackingSquaresCopy);
         Piece.attackingSquares = attackingSquaresCopy.slice();
-        
+
         if(!Piece.checkForCheckMate){
             // console.log("aa gaya bsdkk");
             for(let i of attackingSquaresCopy) {
@@ -321,7 +320,7 @@ class King extends Piece{
             }
         }
         
-        if(this.hasMoved==false) {
+        if(this.hasMoved==false && !Piece.checkForCheckMate && !forCheck) {
             let x = this.pos[0] , y = this.pos[1];
             
             let leftRook = Piece.piecesOnBoard[x][0];
@@ -513,16 +512,19 @@ class Board {
                         }
                     })
                 });
+                // console.log(Piece.piecesOnBoard.slice());
                 let wasChecked = false;
+                Piece.checkForCheckMate = true;
                 if(saveNode.checkForCheck(colorSmallArr[this.whosTurn])) {
                     wasChecked = true;
 
                     let winner = colorSmallArr[this.whosTurn^1];
                     this.satelement(`Game Over : ${winner.charAt(0).toUpperCase()+winner.slice(1)} Won`,colorSmallArr[this.whosTurn]);
                 }
-                else 
+                else
                     this.satelement(`Satelement : Draw`,colorSmallArr[this.whosTurn]);
-                
+                Piece.checkForCheckMate = false;
+
                 if(wasChecked) Game.aud.check.play();
                 else if(wasCapture) Game.aud.capture.play();
                 else if(wasCastle) Game.aud.castles.play();
