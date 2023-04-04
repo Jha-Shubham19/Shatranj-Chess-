@@ -169,9 +169,7 @@ class Pawn extends Piece{
         }
     }
     promote() {
-        let srcPic = [[Rook,'rook',`statics\\images\\Chess_rdt60.png`] , [Knight,'knight',`statics\\images\\Chess_ndt60.png`] , 
-                        [Bishop,'bishop',`statics\\images\\Chess_bdt60.png`] , [Queen,'queen',`statics\\images\\Chess_qdt60.png`],
-                        [King,'king',`statics\\images\\Chess_kdt60.png`]];
+        let srcPic = Game.srcPic;
         
         let cmd = parseInt(prompt(`Enter command :\nRook:0\nKnight:1\nBishop:2\nQueen:3`));
         let q = new srcPic[cmd][0](srcPic[cmd][1] , `${this.color}` , this.color.localeCompare('black')===0 ? srcPic[cmd][2] :  srcPic[cmd][2].replace('d','l'), [this.pos[0],this.pos[1]]);
@@ -542,12 +540,13 @@ class Board {
         
     }
     static placePieces() {
+        let colorSmallArr = ['white','black'];
         for(let j of Piece.piecesOnBoard) {
             for(let i of j) {
                 if(i == undefined) continue;
                 let img = document.createElement('img');
                 img.src = i.imgSrc;
-                if(i.color==='white')
+                if(i.color.localeCompare(colorSmallArr[Board.whosTurn])===0)
                     img.onclick = function(){Board.removeCircle(); i.setAttackingSquares();}
                 this.actualBoard[i.pos[0]][i.pos[1]].appendChild(img);
             }
@@ -565,6 +564,9 @@ class Game {
         defeat: new Audio("statics\\audio\\defeat.mp3"),
         draw: new Audio("statics\\audio\\draw.mp3")
     };
+    static srcPic = [[Rook,'rook',`statics\\images\\Chess_rdt60.png`] , [Knight,'knight',`statics\\images\\Chess_ndt60.png`] , 
+                    [Bishop,'bishop',`statics\\images\\Chess_bdt60.png`] , [Queen,'queen',`statics\\images\\Chess_qdt60.png`],
+                    [King,'king',`statics\\images\\Chess_kdt60.png`],[Pawn,'pawn',`statics\\images\\Chess_pdt60.png`]];
     buildPieces() {
         //making pawns
         for(let i = 0 ; i<8 ; i++) {
@@ -572,10 +574,7 @@ class Game {
             new Pawn('pawn' , 'white' , `statics\\images\\Chess_plt60.png` , [6,i]);
         }
        
-        let srcPic = [[Rook,'rook',`statics\\images\\Chess_rdt60.png`] , [Knight,'knight',`statics\\images\\Chess_ndt60.png`] , 
-                        [Bishop,'bishop',`statics\\images\\Chess_bdt60.png`] , [Queen,'queen',`statics\\images\\Chess_qdt60.png`],
-                        [King,'king',`statics\\images\\Chess_kdt60.png`]];
-
+        let srcPic = Game.srcPic;
         for(let i = 0 ; i<3 ; i++) {
             new srcPic[i][0](srcPic[i][1] , 'black' , srcPic[i][2] , [0,i]);
             new srcPic[i][0](srcPic[i][1] , 'black' , srcPic[i][2] , [0,7-i]);
@@ -610,6 +609,27 @@ function addBoxInBoard() {
     Board.placePieces();
 }
 let some = new Game();
-some.buildPieces();
+let cookieArr = document.cookie.split(';');
+let pieceValue = cookieArr.find((item)=> {
+    return item.trim().startsWith('piece=');
+});
+
+if(pieceValue===undefined) {
+    some.buildPieces();
+    console.log("bot")
+}
+else {
+    let savedGameBoard = JSON.parse(pieceValue.substring(pieceValue.indexOf('=')+1));
+    // console.log(savedGameBoard)
+    for(let i of savedGameBoard[0])
+        for(let j of i) 
+            if(j!==null) {
+                let pieceObj = Game.srcPic.find((item) => item[1].localeCompare(j.name)===0);
+                new pieceObj[0](j.name , j.color, j.imgSrc , j.pos);
+            }
+
+    Board.whosTurn = savedGameBoard[1];
+}
 // Board.setInitialBoard();
 addBoxInBoard();
+window.addEventListener(('unload'),()=> document.cookie = `piece=${JSON.stringify([Piece.piecesOnBoard,Board.whosTurn])}; max-age=${60*60*30}`);
