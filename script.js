@@ -609,6 +609,16 @@ function addBoxInBoard() {
     Board.placePieces();
 }
 let some = new Game();
+document.querySelector('button').addEventListener('click',() => {
+    Board.whosTurn = 0;
+    for(i in Piece.piecesOnBoard)
+        for(j in Piece.piecesOnBoard[i]) Piece.piecesOnBoard[i][j] = undefined;
+
+    document.getElementsByClassName('board')[0].innerHTML=null;
+    some.buildPieces();
+    addBoxInBoard();
+    document.cookie = `piece=${JSON.stringify([Piece.piecesOnBoard,Board.whosTurn])}; max-age=${0}`;
+});
 let cookieArr = document.cookie.split(';');
 let pieceValue = cookieArr.find((item)=> {
     return item.trim().startsWith('piece=');
