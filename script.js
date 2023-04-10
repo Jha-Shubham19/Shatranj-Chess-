@@ -550,6 +550,8 @@ class Board {
                 if(i == undefined) continue;
                 let img = document.createElement('img');
                 img.src = i.imgSrc;
+                img.setAttribute(`draggable`,true);
+                img.addEventListener('dragstart',e=>e.target.click());
                 if(i.color.localeCompare(colorSmallArr[Board.whosTurn])===0)
                     img.onclick = function(){Board.removeCircle(); i.setAttackingSquares();}
                 this.actualBoard[i.pos[0]][i.pos[1]].appendChild(img);
@@ -606,6 +608,16 @@ function addBoxInBoard() {
             
             divCont.classList.add('board-box', `board-box-${colorClass[color&1]}`);
             divCont.addEventListener('click' , ()=> {Board.boardIsClicked(i,j)});
+
+            //draggable thing
+            divCont.addEventListener('dragover', (e)=> {
+                e.preventDefault();
+                e.dataTransfer.dropEffect='move';
+            })
+            divCont.addEventListener('drop', (e)=> {
+                e.target.click();
+                console.log(e.target);
+            })
             Board.actualBoard[i][j] = divCont;
             board.appendChild(divCont);
         }
