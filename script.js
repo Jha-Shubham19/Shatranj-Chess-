@@ -170,8 +170,12 @@ class Pawn extends Piece{
     }
     promote() {
         let srcPic = Game.srcPic;
-        
-        let cmd = parseInt(prompt(`Enter command :\nRook:0\nKnight:1\nBishop:2\nQueen:3`));
+        let cmd,invalidCommand='';
+        while(true) {
+            cmd = parseInt(prompt(`${invalidCommand}Enter command(Number) :\nRook : 0\nKnight : 1\nBishop : 2\nQueen : 3`));
+            if(cmd>=0 && cmd<4) break;
+            else invalidCommand = `Invalid Command try again\n`;
+        }
         let q = new srcPic[cmd][0](srcPic[cmd][1] , `${this.color}` , this.color.localeCompare('black')===0 ? srcPic[cmd][2] :  srcPic[cmd][2].replace('d','l'), [this.pos[0],this.pos[1]]);
         Board.actualBoard[this.pos[0]][this.pos[1]].firstElementChild.src = q.imgSrc;
     }
