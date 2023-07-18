@@ -43,7 +43,7 @@ git clone https://github.com/Jha-Shubham19/Shatranj-Chess-
 - CSS
 - JavaScript
 
-Credits
+## Credits
 
 - The chess piece icons used in the game are from the Wikimedia Commons (https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces).
 - The audio cues utilized in the game are sourced from Lichess (https://github.com/lichess-org/lila/tree/master/public/sound).
