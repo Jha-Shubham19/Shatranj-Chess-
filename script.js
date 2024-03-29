@@ -40,7 +40,7 @@ class Piece {
         Piece.attackingSquares = attackingSquaresCopy.slice();
 
         if(!Piece.checkForCheckMate){
-            // console.log("aa gaya bsdkk");
+  
             for(let i of attackingSquaresCopy) {
                 let node = [Board.actualBoard[i[0]][i[1]],Piece.piecesOnBoard[i[0]][i[1]]];
                 
